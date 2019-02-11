@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Elect Vote System </title>
+
+	<script>
+		if (performance.navigation.type==2){
+			if(document.cookie.indexOf("admin")){
+				location.replace("admin_menu.html");
+			}
+			else{
+				location.replace("user_menu.html");
+			}
+		}
+	</script>
+
+        <script>
+
+            var httpRequest;    
+
+            function signup()
+            {
+                document.getElementById("signupfrm").submit();
+            }
+
+            function find_account()
+            {
+                document.getElementById("findaccountfrm").submit();
+            }
+
+            //var httpRequest;
+            function login()
+            {
+                if(document.getElementById("id_text").value=="" || document.getElementById("pw_text").value=="")
+                {
+                    
+                    alert("you should input both ID & PW");
+                    document.getElementById("id_text").value="";
+                    document.getElementById("pw_text").value="";
+                    return;
+                }
+
+                httpRequest = new XMLHttpRequest();
+                httpRequest.responseType = 'text';
+                var url = '/login';
+                httpRequest.open('POST', url);
+
+                var jsonData = {
+                    "UserID" : document.getElementById("id_text").value,
+                    "UserPW" : document.getElementById("pw_text").value
+                };
+                httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                httpRequest.send(JSON.stringify(jsonData));
+                //alert(JSON.stringify(jsonData));
+                httpRequest.onreadystatechange = loginresponse;
+
+            }
+
+            function loginresponse()
+            {
+                try {
+                    if (httpRequest.readyState == XMLHttpRequest.DONE) {
+                        if (httpRequest.status == 200) {
+                            //alert(httpRequest.responseText);
+                            if(httpRequest.responseText == "success"){
+                                document.getElementById("frm").submit();
+                            }
+                            else {
+                                alert("ID or PW wrong!!!");
+                            }
+                            document.getElementById("id_text").value="";
+                            document.getElementById("pw_text").value="";
+                        } else {
+                            alert("Request Problem");
+                        }
+                    }
+                } catch(e) {
+                    alert("Caught ExeptionOn: " + e.description);
+                }
+            }
+        </script>
+    </head>
+
+    <body>
+        {{.}}
+        <hr><hr>
+        <h3> Elec Vote System</h3>
+
+        ID : <input type="text" id="id_text" name="userID" value="" size=10> <br>
+        PW: <input type="password" id="pw_text" name="userPW" value="" size=10> <br>
+        <input type="button" value="LOG IN" onclick="login()">&nbsp;&nbsp;&nbsp;
+        <input type="button" value="SIGNUP" onclick="signup()">&nbsp;&nbsp;&nbsp;
+        <input type="button" value="FIND ID/PW" onclick="find_account()">
+
+        <form action="/loginSuccess" id="frm" method="GET" enctype="application/x-www-form-urlencoded">
+            <input type="hidden" name="data" value="test">
+        </form>
+        <form action="/signupfrm" id="signupfrm" method="GET" enctype="application/x-www-form-urlencoded">
+            <input type="hidden" name="data" value="test">
+        </form>
+        <form action="/findaccountfrm" id="findaccountfrm" method="GET" enctype="application/x-www-form-urlencoded">
+            <input type="hidden" name="data" value="test">
+        </form>
+    </body>
+</html>
+
+

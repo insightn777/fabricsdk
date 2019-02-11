@@ -1,0 +1,43 @@
+//dev chaincode docker
+cd project && CORE_PEER_ADDRESS=peer:7052 CORE_CHAINCODE_ID_NAME=mycc:0 ./project
+
+//peer chaincode docker
+peer chaincode install -p chaincodedev/chaincode/project -n mycc -v 0
+peer chaincode instantiate -n mycc -v 0 -c '{"Args":["a","10"]}' -C myc
+
+// insert users
+peer chaincode invoke -n mycc -c '{"Args":["insertUser", "1111", "Kim", "1234", "123456-1111111", "Daegu"]}' -C myc
+peer chaincode invoke -n mycc -c '{"Args":["insertUser", "2222", "Jung", "1234", "234567-1111111", "Seoul"]}' -C myc
+peer chaincode invoke -n mycc -c '{"Args":["insertUser", "3333", "Lee", "1234", "345678-1111111", "Daejun"]}' -C myc
+peer chaincode invoke -n mycc -c '{"Args":["insertUser", "4444", "Yoon", "1234", "456789-1111111", "Busan"]}' -C myc
+
+// show users
+peer chaincode invoke -n mycc -c '{"Args":["queryUser", "{\"selector\":{\"DocType\":\"user\"}}"]}' -C myc
+
+// delete users
+peer chaincode invoke -n mycc -c '{"Args":["deleteUser", "1111"]}' -C myc
+peer chaincode invoke -n mycc -c '{"Args":["deleteUser", "2222"]}' -C myc
+peer chaincode invoke -n mycc -c '{"Args":["deleteUser", "3333"]}' -C myc
+peer chaincode invoke -n mycc -c '{"Args":["deleteUser", "4444"]}' -C myc
+
+
+// insert votes
+peer chaincode invoke -n mycc -c '{"Args":["insertVote", "vote01", "question01", "question02", "question03"]}' -C myc
+peer chaincode invoke -n mycc -c '{"Args":["insertVote", "vote02", "question01", "question02", "question03"]}' -C myc
+peer chaincode invoke -n mycc -c '{"Args":["insertVote", "vote03", "question01", "question02", "question03"]}' -C myc
+peer chaincode invoke -n mycc -c '{"Args":["insertVote", "vote04", "question01", "question02", "question03"]}' -C myc
+
+// show votes
+peer chaincode invoke -n mycc -c '{"Args":["queryVote", "{\"selector\":{\"DocType\":\"vote\"}}"]}' -C myc
+
+// delete votes
+peer chaincode invoke -n mycc -c '{"Args":["deleteVote", "vote01"]}' -C myc
+peer chaincode invoke -n mycc -c '{"Args":["deleteVote", "vote02"]}' -C myc
+peer chaincode invoke -n mycc -c '{"Args":["deleteVote", "vote03"]}' -C myc
+peer chaincode invoke -n mycc -c '{"Args":["deleteVote", "vote04"]}' -C myc
+
+// append
+peer chaincode invoke -n mycc -c '{"Args":["insertVoteResult", "vote01", "1111", "1", "1", "1"]}' -C myc
+peer chaincode invoke -n mycc -c '{"Args":["insertVoteResult", "vote01", "2222", "2", "2", "2"]}' -C myc
+peer chaincode invoke -n mycc -c '{"Args":["insertVoteResult", "vote01", "3333", "3", "3", "3"]}' -C myc
+peer chaincode invoke -n mycc -c '{"Args":["insertVoteResult", "vote01", "4444", "4", "4", "4"]}' -C myc

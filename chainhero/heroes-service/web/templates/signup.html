@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset='utf-8'>
+
+    <script>
+	    if (performance.navigation.type ==2) {
+		    location.replace("index.html");
+	    }
+    </script>
+
+    <script>
+	var idck=0;
+
+        function cancle()
+        {
+            //window.history.back();
+            document.getElementById("indexcancle").submit();
+        }
+
+        function confirm()
+        {
+		if(document.getElementById("ID").value=="")
+		{
+			alert("Input ID!!");
+			return;
+		}
+		if(document.getElementById("Unum").value=="")
+		{
+			alert("Input Unumber!!");
+			return;
+		}
+		if(document.getElementById("PW").value=="")
+		{
+			alert("Input Password");
+			return;
+		}
+		if(document.getElementById("Name").value=="")
+		{
+			alert("Input Name");
+			return;
+		}
+		if(document.getElementById("Region").value=="")
+		{
+			alert("Input Region");
+			return;
+		}
+
+
+		var re = /^\d{2}[0-1]\d[0-3]\d-?[1-6]\d{6}$/u;
+		
+		if (re.test(document.getElementById("Unum").value)==false)
+		{
+			alert("Match the Unum pattern!!");
+			document.getElementById("Unum").value="";
+			return;
+		}
+
+		if(idck != 1)
+		{
+			alert("You should do ID duplicate check!!");
+			return;
+		}
+
+  	        alert("회원가입 완료!!");
+		document.getElementById("frm").submit();
+
+	}
+/*
+	function confirm()
+        {
+             if(idck != 1)
+             {
+                     alert("You should do ID duplicate check!!");
+                     return;
+             }
+
+		var re = /^\d{2}[0-1]\d[0-3]\d-?[1-6]\d{6}$/u;
+                
+                if (re.test(document.getElementById("Unum").value)==false)
+                {
+                        alert("Match the Unum pattern!!");
+                        document.getElementById("Unum").value="";
+                        return;
+                }	
+
+
+
+            alert("회원가입 완료!!");
+            document.getElementById("frm").submit();
+        }*/
+
+	function unumConfirm()
+	{
+		input = document.getElementById("IDNumber").value
+	}
+    </script>
+
+    <script>
+	  /*  function checkID() {
+            var httpRequest = new XMLHttpRequest();
+            var id = document.getElementById("ID").value;
+            httpRequest.responseType = "text"
+            httpRequest.open('POST', '/checkID')
+            httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            httpRequest.send(id)
+            httpRequest.onreadystatechange = function () {
+                try {
+                    if (httpRequest.readyState == XMLHttpRequest.DONE) {
+                        if (httpRequest.status == 200) {
+                            if (httpRequest.responseText == "true") {
+                                alert("사용가능한 ID입니다.");
+                                var btn = document.getElementById("IDCheckButton");
+                                btn.innerHTML = "ID중복체크 완료"
+                                btn.disabled = "disabled";
+				document.getElementById("ID").disabled="disabled";
+                                idck = 1;
+                            }
+                            else {
+                                alert("이미 존재하는 ID입니다.");
+                            }
+                        } else {
+                            alert("Request Problem");
+                        }
+                    }
+                } catch (e) {
+                    alert("Caught ExeptionOn: " + e.description);
+                }
+            }
+	 }*/
+	function checkID() {
+            var httpRequest = new XMLHttpRequest();
+            var id = document.getElementById("ID").value;
+            httpRequest.responseType = "text"
+            httpRequest.open('POST', '/checkID')
+            httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            httpRequest.send(id)
+            httpRequest.onreadystatechange = function () {
+                try {
+                    if (httpRequest.readyState == XMLHttpRequest.DONE) {
+                        if (httpRequest.status == 200) {
+                            if (httpRequest.responseText == "true") {
+                                alert("사용가능한 ID입니다.");
+                                var btn = document.getElementById("IDCheckButton");
+                                btn.innerHTML = "ID중복체크 완료"
+                                btn.disabled = "disabled"
+  			        document.getElementById("ID").setAttribute('readonly','readonly');
+                                idck = 1;
+                            }
+                            else {
+                                alert("이미 존재하는 ID입니다.");
+                            }
+                        } else {
+                            alert("Request Problem");
+                        }
+                    }
+                } catch (e) {
+                    alert("Caught ExeptionOn: " + e.description);
+                }
+            }
+        }
+
+
+    </script>
+</head>
+
+<body>
+    <div>
+	    <!--
+        <form action='signup' id='frm' method='post'>
+		<label>ID<input type="text" id="ID" name="ID" required></input></label>
+					<button onclick="checkID()" id="IDCheckButton">ID중복체크</button>   <br>
+		<label>주민등록번호<input type="text" id="Unum" name="IDNumber" placeholder="xxxxxx-xxxxxxx" pattern="[0-9]{6}\-[1-4][0-9]{6}" required></input></label><br>
+		<label>Password<input type="password" id="PW" name="Password" required></input></label><br>
+		<label>이름<input type="text" name="Name" id="Name" required></input></label><br>
+		<label>지역<input type="text" name="Region" id="Region" required></input></label><br>
+	    <p> <input type="submit" value="Comfirm"  /> <input type="button" value="Cancel" onclick="cancle()" /></p>
+        </form>
+	-->
+	<form action='signup' id='frm' method='post'>
+            <p>ID <input type="text" id="ID" name="ID"></input></p>
+            <p>주민등록번호 <input type="text" id="Unum" name="IDNumber" placeholder="xxxxxx-xxxxxxx"></input></p>
+            <p>Password <input type="password" id="PW" name="Password"></input></p>
+            <p>이름 <input type="text" id="Name" name="Name"></input></p>
+            <p>지역 <input type="text" id="Region" name="Region" value="Daemyeong" readonly></input></p>
+            <p> <input type="button" value="Comfirm" onclick="confirm()" /> <input type="button" value="Cancel" onclick="cancle()" />
+        </form>
+
+	<button onclick="checkID()" id="IDCheckButton">ID중복체크</button>
+
+    </div>
+
+    <form action="/indexcancle" id="indexcancle" method="GET" enctype="application/x-www-form-urlencoded">
+        <input type="hidden" name="data" value="test">
+    </form>
+</body>

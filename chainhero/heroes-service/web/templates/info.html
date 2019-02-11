@@ -1,0 +1,28 @@
+<html><head>
+    <script>
+        var jsonString = {{.}};
+
+	if (jsonString != "admin")
+        	var user = JSON.parse(jsonString);
+
+        //document.write(" Welcome &nbsp;&nbsp; " + user.Name + "&nbsp;(" + user.Region + ")&nbsp; !!! &nbsp;&nbsp;&nbsp;");
+        //info = document.getElementById("info").innerHTML = " Welcome &nbsp;&nbsp; " + user.Name + "&nbsp;(" + user.Region + ")&nbsp; !!! &nbsp;&nbsp;&nbsp;"
+    </script></head>
+    
+    <body>
+    <form action="/logout" method="GET" enctype="application/x-www-form-urlencoded">
+        <!-- Welcome {{.}}! &nbsp;&nbsp;&nbsp; -->
+        <!-- <span id="info">test</span> -->
+        <script>
+		if(jsonString != "admin")
+	            document.write(" Welcome &nbsp;&nbsp; " + user.Name + "님&nbsp;(" + user.Location + "동)&nbsp; !!! &nbsp;&nbsp;&nbsp;");
+		else
+			document.write("Welcome &nbsp;&nbsp; "+ "admi님&nbsp;&nbsp;");
+        </script>
+    
+        <input type="submit" value="logout">
+    </form>
+    <hr>
+    </body>
+    </html>
+    

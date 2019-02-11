@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+            var jsonString = {{.}};
+            var users = JSON.parse(jsonString);
+
+            //
+            var regions = new Array();  //String Array
+            function regionNotExist(regionName)
+            {
+                for(var i=0; i<regions.length; i++)
+                {
+                    if(regions[i]==regionName)
+                        return false;
+                }
+                return true;
+            }
+            
+            //function getRegions()
+            for(var i=0; i<users.length; i++)
+            {
+                if(regionNotExist(users[i].Location))
+                {
+                    regions.push(users[i].Location);
+                }
+            }
+
+            //
+
+            var userInfo = new Array(regions.length);
+            for(var i=0; i<userInfo.length; i++)
+            {
+                userInfo[i] = new Array();
+            }
+
+            function User(name, unum, id, pw, region)
+            {   // User Struct
+                this.name = name;
+                this.unum = unum;
+                this.id = id;
+                this.pw = pw;
+                this.region = region;
+            }
+            
+            function getIndexByRegion(regionName)
+            {
+                for(var i=0; i<regions.length; i++)
+                {
+                    if (regions[i] == regionName)
+                        return i;
+                }
+                return -1;
+            }
+
+            for(var i=0; i<users.length; i++)
+            {
+                var idx = getIndexByRegion(users[i].Location);
+                var tempUser = new User(users[i].Name, users[i].SocialNumber, users[i].ID, users[i].Password, users[i].Location);
+
+                userInfo[idx].push(tempUser);
+            }    
+
+            function deleteMembership(delID) // redirect 필요!
+            {
+                var res = confirm(delID + " 정보를 삭제하시겠습니까?");
+                //alert("you choose " + res);
+
+                if(res == true)
+                {
+                    alert("삭제되었습니다.");   // 선출력 후처리 ㅋㅋ
+                    
+                    document.write("<form action=\"/membershipDelete\" id=\"frm\" method=\"POST\" enctype=\"application/x-www-form-urlencoded\">");
+                    document.write("<input type=\"hidden\" name=\"delID\" value=" + delID + ">");
+                    document.write("</form> <br>");
+                    document.getElementById("frm").submit();
+                }
+                else
+                {
+                    alert("취소되었습니다");
+                }
+            }
+        </script>
+    </head>
+
+    <body>
+        <h1>Membership Management</h1>
+        <hr><hr>
+
+        <script>
+            for(var i=0; i<regions.length; i++)
+            {
+                document.write("<h2>" + regions[i] + " Membership </h2>");
+                for(var j=0; j<userInfo[i].length; j++)
+                {
+                document.write("<form action=\"/membershipModify\" method=\"POST\" enctype=\"application/x-www-form-urlencoded\">");
+                document.write(userInfo[i][j].name + "&nbsp/&nbsp" + userInfo[i][j].id + "&nbsp/&nbsp" + userInfo[i][j].pw + "&nbsp/&nbsp" + userInfo[i][j].region + "&nbsp&nbsp&nbsp");
+                document.write("<input type=\"hidden\" name=\"modifyID\" value=" + userInfo[i][j].id + ">");
+
+                document.write("<input type=\"submit\" value=\"Modify\">" + "&nbsp&nbsp&nbsp");
+                document.write("<input type=\"button\" value=\"Delete\" onclick=\"deleteMembership(\'" + userInfo[i][j].id + "\')\">");
+                document.write("</form> <br>");
+
+                }
+            }
+        </script>
+
+    </body>
+</html>

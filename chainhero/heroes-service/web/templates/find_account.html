@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset='utf-8'>
+    <script>
+        var httpRequest;
+
+        function getResult()
+        {
+            try {
+                    if (httpRequest.readyState == XMLHttpRequest.DONE) {
+                        if (httpRequest.status == 200) {
+                            alert("Find Result : " + httpRequest.responseText);
+                        } else {
+                            alert("Request Problem");
+                        }
+                    }
+                } catch(e) {
+                    alert("Caught ExeptionOn: " + e.description);
+                }
+        }
+
+        function find_account(para)
+        {
+            //alert("find " + para);
+            httpRequest=new XMLHttpRequest();
+            httpRequest.responseType = 'text';
+            var url = '/findAccount';
+            httpRequest.open('POST', url);
+            
+            if(para == "ID")  // find ID
+            {
+                var name = document.getElementById("inName").value;
+                var unum = document.getElementById("inUnum").value;
+
+                var jsonData = {
+                    "Type" : "id",
+                    "ID" : "empty",
+                    "Name" : name,
+                    "Unum" : unum,
+                };
+
+                document.getElementById("inName").value="";
+                document.getElementById("inUnum").value="";
+            }
+            else    // find PW
+            {
+                var inId = document.getElementById("inID").value;
+                var name = document.getElementById("inName").value;
+                var unum = document.getElementById("inUnum").value;
+
+                var jsonData = {
+                    "Type" : "pw",
+                    "ID" : inId,
+                    "Name" : name,
+                    "Unum" : unum,
+                };
+
+                document.getElementById("inID").value="";
+                document.getElementById("inName").value="";
+                document.getElementById("inUnum").value="";
+            }
+
+            httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            //document.getElementById("demo").innerHTML = JSON.stringify(jsonData);
+            httpRequest.send(JSON.stringify(jsonData));
+
+            httpRequest.onreadystatechange = getResult;
+
+        }
+
+        function cancle()
+        {
+            //window.history.back();
+            
+		//document.getElementById("indexcancle").submit();
+
+		location.replace("index.html");
+
+		
+        }
+
+        function find_ID()
+        {
+            var resultSec = document.getElementById("resultSection");
+            resultSec.innerHTML="";
+
+            var title = document.createElement("div");
+            title.appendChild(document.createTextNode("FIND ID>>"));
+
+            var inputName = document.createElement("INPUT");
+            inputName.setAttribute("type", "text");
+            inputName.setAttribute("id", "inName");
+            var inputUnum = document.createElement("INPUT");
+            inputUnum.setAttribute("type", "text");
+            inputUnum.setAttribute("id", "inUnum");
+
+            var nameText = document.createElement("span");
+            nameText.appendChild(document.createTextNode("Input Name : "));
+
+            var brTag = document.createElement("br");
+
+            var unumText = document.createElement("span");
+            unumText.append(document.createTextNode("Input Unum : "));
+
+            var brTag3 = document.createElement("br");
+
+            var find = document.createElement("BUTTON");
+            find.appendChild(document.createTextNode("FIND"));
+            find.setAttribute("onclick", "find_account('ID')");
+
+            resultSec.appendChild(title);
+            resultSec.appendChild(nameText);
+            resultSec.appendChild(inputName);
+            resultSec.appendChild(brTag);
+            resultSec.appendChild(unumText);
+            resultSec.appendChild(inputUnum);
+            resultSec.appendChild(brTag3);
+            resultSec.appendChild(find);
+
+            //resultSec.innerHTML = "test";
+        }
+        function find_PW()
+        {
+            var resultSec = document.getElementById("resultSection");
+            resultSec.innerHTML="";
+
+            var title = document.createElement("div");
+            title.appendChild(document.createTextNode("FIND PW>>"));
+
+            var inputName = document.createElement("INPUT");
+            inputName.setAttribute("type", "text");
+            inputName.setAttribute("id", "inName");
+            var inputID = document.createElement("INPUT");
+            inputID.setAttribute("type", "text");
+            inputID.setAttribute("id", "inID");
+            var inputUnum = document.createElement("INPUT");
+            inputUnum.setAttribute("type", "text");
+            inputUnum.setAttribute("id", "inUnum");
+
+            var nameText = document.createElement("span");
+            nameText.appendChild(document.createTextNode("Input Name : "));
+            var brTag1 = document.createElement("br");
+
+            var idText = document.createElement("span");
+            idText.appendChild(document.createTextNode("Input ID : "));
+            var brTag2 = document.createElement("br");
+
+            var unumText = document.createElement("span");
+            unumText.append(document.createTextNode("Input Unum : "));
+
+            var brTag3 = document.createElement("br");
+
+            var find = document.createElement("BUTTON");
+            find.appendChild(document.createTextNode("FIND"));
+            find.setAttribute("onclick", "find_account('PW')");
+
+            resultSec.appendChild(title);
+            resultSec.appendChild(idText);
+            resultSec.appendChild(inputID);
+            resultSec.appendChild(brTag1);
+            resultSec.appendChild(nameText);
+            resultSec.appendChild(inputName);
+            resultSec.appendChild(brTag2);
+            resultSec.appendChild(unumText);
+            resultSec.appendChild(inputUnum);
+            resultSec.appendChild(brTag3);
+            resultSec.appendChild(find);
+        }
+    </script>
+</head>
+
+<body>
+    <div>
+        <h3><input type="button" value="ID 찾기" onclick="find_ID()"></h3>
+        <h3><input type="button" value="PW 찾기" onclick="find_PW()"></h3>
+        <h3><input type="button" value="취소" onclick="cancle()"></h3>
+        
+        <br>
+
+        <div id="resultSection">Here!!</div>
+
+    </div>
+
+    <form action="/indexcancle" id="indexcancle" method="GET" enctype="application/x-www-form-urlencoded">
+        <input type="hidden" name="data" value="test">
+    </form>
+
+    <!--for DEBUG??-->
+    <hr>
+    <p id="demo"></p>
+    <script>
+        document.getElementById("demo").innerHTML = 
+            "Page location is: " + window.location.href + "<br>" + 
+            "Page hostname is: " + window.location.hostname + "<br>" + 
+            "Page path is: " + window.location.pathname;
+    </script>
+</body>

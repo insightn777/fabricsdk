@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset='utf-8' />
+    <title>투표페이지</title>
+    <script>
+	    if(performance.navigation.type == 2) {
+		    location.replace("user_menu.html");
+	    }
+    </script>
+
+</head>
+
+<body>
+    <p>
+        <h2>투표 페이지</h2>
+    </p>
+    <p>
+        <h3>투표 제목 : {{.Votename}}</h3>
+    </p>
+
+    <form action="/votePage?Votename={{.Votename}}" method="post" name="voteResult">
+        {{$num := 1}}
+        {{range $i, $v := .Question}}
+	{{$v}} <input type="radio" name="resultGroup" value="{{$i}}" checked />
+        {{end}}
+        <p><input type="submit" value="투표완료" /></p>
+    </form>
+</body>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Enroll Vote </title>
+        <script>
+            var article_cnt=0;
+
+            function cancle()
+            {
+                alert("cancled!");
+                document.getElementById("funccancle").submit();
+            }
+
+            function add_article()
+            {
+                var ol = document.getElementById("articles");
+
+                var li = document.createElement("LI");
+                var input_tag = document.createElement("INPUT");
+                input_tag.setAttribute("type", "text");
+                var temp_id = "input" + article_cnt;
+                article_cnt++;
+                input_tag.setAttribute("id", temp_id );
+
+                li.appendChild(input_tag);
+
+                ol.appendChild(li);
+            }
+
+            function delete_article()
+            {
+                article_cnt--;
+
+                var ol = document.getElementById("articles");
+                // delete last article
+                ol.removeChild(ol.childNodes[article_cnt]);
+            }
+
+            function makeArticlesString()
+            {
+                var articles = new Array();
+
+                for(var i=0; i<article_cnt; i++)
+                {
+                    var temp_id = "input"+i     // input tag ID : ex) input1, input2, ...
+                    var domObj = document.getElementById(temp_id);
+
+                    articles.push(domObj.value);
+                }
+
+                return articles;
+            }
+
+
+            var httpRequest;
+
+            function enroll()
+            {
+                //document.getElementById("demo").innerHTML = "test";
+                var articles = makeArticlesString();
+
+                //DEBUG
+                //document.getElementById("demo").innerHTML = articles;
+                
+                httpRequest = new XMLHttpRequest();
+                httpRequest.responseType = 'text';
+                var url = '/enroll_vote';
+                httpRequest.open('POST', url);
+
+                var voteName = document.getElementById("voteName").value;
+                var endDate = document.getElementById("endDate").value;
+                // var articlesString
+		
+		var location = document.getElementById("location").value;
+
+                // create javascript Object
+                var jsonData = {
+                    "VoteName" : voteName,
+                    "EndDate" : endDate,
+                    "Articles" : articles,
+		    "Location" : location,
+                };
+                httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                //document.getElementById("demo").innerHTML = JSON.stringify(jsonData);
+                httpRequest.send(JSON.stringify(jsonData));
+                
+                httpRequest.onreadystatechange = enrollsuccess;
+                
+            }
+
+            function enrollsuccess()
+            {
+                try {
+                    if (httpRequest.readyState == XMLHttpRequest.DONE) {
+                        if (httpRequest.status == 200) {
+                            alert(httpRequest.responseText);
+                        } else {
+                            alert("Request Problem");
+                        }
+                    }
+                } catch(e) {
+                    alert("Caught ExeptionOn: " + e.description);
+                }
+
+                document.getElementById("funccancle").submit(); // go to the menu function
+
+            }
+
+        </script>
+    </head>
+
+    <body>
+
+        <h3> Enroll Vote</h3>
+        <hr>
+
+        Vote Name : <input type="text" id="voteName" value="" size=10> <br>
+        End Date : <input type="date" id="endDate" value=""><br>
+	Location : <input type="text" id="location" value=""><br>
+        Input Article::&nbsp;&nbsp; 
+        <input type="button" value="Add Article" onclick="add_article()"> &nbsp;&nbsp; 
+        <input type="button" value="Delete Article" onclick="delete_article()"> <br>
+        <ol id="articles"></ol>
+
+        <br>
+
+        <input type="submit" value="ENROLL" onclick="enroll()">&nbsp;&nbsp;&nbsp; 
+        <input type="button" value="CANCLE" onclick="cancle()">
+        
+
+        <!--for canclue button-->
+        <form action="/funccancle" id="funccancle" method="GET" enctype="application/x-www-form-urlencoded">
+            <input type="hidden" name="data" value="test">
+        </form>
+
+    </body>
+</html>

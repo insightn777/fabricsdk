@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+            var jsonString = {{.}};
+            var strings = jsonString.split("splitSeparator");
+            //var voteResult = JSON.parse(jsonString);
+            var voteResult = JSON.parse(strings[0]);
+            var userCounts = JSON.parse(strings[1]);
+
+
+		document.write("DEBUG : "+ jsonString + "<br>");
+		document.write("voteResult : " + strings[0] + "<br>");
+		document.write("userCounts : " + strings[1] + "<br>");
+		//alert("DEBUG : " + jsonString);
+		
+
+            function User_response(name, region, response)
+            {
+                this.name = name;
+                this.region = region;
+                this.response = response;
+            }
+            function Vote(name, startDate, endDate, articles, user_responses)
+			{
+				// Vote Object attributes
+				this.name = name;
+				this.startDate = startDate;
+				this.endDate = endDate;
+		                this.articles = articles;
+				this.user_responses = user_responses;
+			}
+
+            var temp_articles = new Array();
+            for(var j=0; j<voteResult.Question.length; j++){
+                temp_articles[j] = voteResult.Question[j];
+            }
+		document.write("temp_articles : " + temp_articles + "<br>");
+
+            var temp_user_responses = new Array();
+
+		if(voteResult.UserResult != null){
+
+            for(var j=0; j<voteResult.UserResult.length; j++){
+                temp_user_responses[j] = new User_response(voteResult.UserResult[j].ID, voteResult.UserResult[j].Location, voteResult.UserResult[j].Result[0]);
+            }
+		document.write("temp_user_responses : " + temp_user_responses + "<br>");
+            
+
+		}
+
+
+            var vote = new Vote(voteResult.Votename, voteResult.StartDate, voteResult.EndDate, temp_articles, temp_user_responses);
+            // test print
+            document.write(vote.name + " " + vote.startDate + " " + vote.endDate + " " + vote.articles + "<br>");
+			
+			
+			// test print
+            for(var i=0; i<vote.user_responses.length; i++)
+            {
+                document.write(vote.user_responses[i].name + " " + vote.user_responses[i].region + " " + vote.user_responses[i].response);
+                document.write("<br>");
+            }
+
+            // make region array using Region count
+            var region = new Array();
+	    for (var i=0; i<userCounts.length; i++)
+            {
+                region[i] = new Array();
+            }
+           
+	    for(var i=0; i<vote.user_responses.length; i++)
+            {
+                var idx = getRegion(vote.user_responses[i].region);
+                region[idx].push(vote.user_responses[i]);
+            }
+
+            function getRegion(region)
+            {
+                for (var i=0; i<userCounts.length; i++)
+                {
+                    if(region == userCounts[i].Region)
+                        return i;
+                }
+                return -1;
+            }
+
+        </script>
+    </head>
+
+    <body>
+	<script>
+		document.write("<h1>" + vote.name + "</h1><br>");
+	    for(var j=0; j<region.length; j++)
+            {
+                document.write("<h2>" + userCounts[j].Region + " Results</h2>");
+
+                for(var k=0; k<region[j].length; k++)
+                {
+                   document.write(region[j][k].name + " " + region[j][k].response + "<br>");
+                }
+
+                document.write("<hr>");
+            }
+	</script>
+		<br>
+        <hr><hr>
+
+       
+    </body>
+</html>

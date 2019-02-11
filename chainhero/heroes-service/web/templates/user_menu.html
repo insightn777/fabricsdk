@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8" />
+</head>
+
+
+<body>
+        {{ template "info.html" . }}
+        <div>
+            <p>
+                <form action="/userVoteAll"><input type="submit" value="투표 전체보기" /></form>
+            </p>
+        </div>
+        
+        <div>
+            <p>
+                <form action="/userVoting"><input type="submit" value="진행중인 투표 목록" /></form>
+            </p>
+        </div>
+        
+        <div>
+            <p>
+                <form action="/userVoted"><input type="submit" value="참여한 투표 목록" /></form>
+            </p>
+        </div>
+
+        <!--logout test-->
+        <!--
+        Welcome ! &nbsp;&nbsp;&nbsp;
+        <form action="/logout" method="GET" enctype="application/x-www-form-urlencoded">
+               <input type="submit" value="logout">
+        </form>
+        -->
+</body>
+
+

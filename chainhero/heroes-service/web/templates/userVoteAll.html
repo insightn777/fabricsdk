@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>모든 투표목록 조회</title>
+    {{$Vote := .Vote}}
+    {{$Now := .Now}}
+    {{$ID := .UserID}}
+</head>
+
+<body>
+    <div>
+        <h2>모든 투표목록 조회</h2>
+    </div>
+    <p>
+        <h3>오늘 날짜 : {{$Now}}</h3>
+    </p>
+    <div>
+        <ol>
+            {{range $Vote}}
+            {{$flag := true}}
+
+            {{if gt $Now .EndDate}}
+            {{$flag = false}}
+            {{end}}
+
+            {{if $flag}}
+            {{range .UserResult}}
+            {{if eq $ID .ID}}
+            {{$flag = false}}
+            {{end}}
+            {{end}}
+
+            {{if $flag}}
+            <h4>
+                <li>
+                    {{.Votename}} {{.StartDate}} {{.EndDate}} <button onClick="location.href=`/votePage?Votename=`+{{.Votename}}">투표하기</button>
+                </li>
+            </h4> {{else}} <h4>
+                <li>
+                    {{.Votename}} {{.StartDate}} {{.EndDate}} <button>투표참여완료</button>
+                </li>
+            </h4>
+            {{end}}
+
+            {{else}}
+            <h4>
+                <li>
+                    {{.Votename}} {{.StartDate}} {{.EndDate}} <button>종 료</button>
+                </li>
+            </h4>
+            {{end}}
+            {{end}}
+        </ol>
+    </div>
+</body>

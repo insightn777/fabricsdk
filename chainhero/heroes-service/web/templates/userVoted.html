@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <title>이미 참여했거나, 종료된 투표</title>
+    {{$Vote := .Vote}}
+    {{$Now := .Now}}
+    {{$ID := .UserID}}
+</head>
+
+<body>
+    <div>
+        <h2>이미 참여했거나, 종료된 투표</h2>
+    </div>
+    <p>
+        <h3>오늘 날짜 : {{$Now}}</h3>
+    </p>
+    <div>
+        <ol>
+            {{range $Vote}}
+            {{$flag := true}}
+
+            {{if gt $Now .EndDate}}
+            {{$flag = false}}
+            {{end}}
+
+            {{if $flag}}
+            {{range .UserResult}}
+            {{if eq $ID .ID}}
+            {{$flag = false}}
+            {{end}}
+            {{end}}
+
+            {{if eq $flag false}}
+            <h4>
+                <li>
+                    {{.Votename}} {{.StartDate}} {{.EndDate}} <button>투표참여완료</button>
+                </li>
+            </h4>
+            {{end}}
+
+            {{else}}
+            <h4>
+                <li>
+                    {{.Votename}} {{.StartDate}} {{.EndDate}} <button>종 료</button>
+                </li>
+            </h4>
+            {{end}}
+            {{end}}
+        </ol>
+    </div>
+</body>

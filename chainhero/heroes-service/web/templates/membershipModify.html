@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+            var jsonString = {{.}};
+            var userInfo = JSON.parse(jsonString);
+
+            function modify()
+            {
+                // 선출력 후처리... 이렇게 하면 안되는데...
+                alert("수정되었습니다.");
+                document.getElementById("frm").submit();
+            }
+
+            function cancle()
+            {
+                alert("취소되었습니다.");
+                window.history.back();
+            }
+
+			
+            document.write("User name : " + userInfo.Name + "<br>");
+            document.write("User unum : " + userInfo.SocialNumber + "<br>");
+            document.write("User id : " + userInfo.ID + "<br>");
+            
+            
+            document.write("<form action=\"/membershipModifyRequest\" id=\"frm\" method=\"GET\" enctype=\"application/x-www-form-urlencoded\">");
+            document.write("User pw : &nbsp&nbsp");
+            document.write("<input type=\"text\" name=\"newPW\" value=" + userInfo.Password + ">");
+            document.write("<br>");
+            
+            document.write("User region : &nbsp&nbsp");
+            document.write("<input type=\"text\" name=\"newRegion\" value=" + userInfo.Location + ">");
+            document.write("<br>");
+
+            document.write("<input type=\"button\" value=\"Modify\" onclick=\"modify()\">" + "&nbsp&nbsp&nbsp");
+            document.write("<input type=\"button\" value=\"Cancle\" onclick=\"cancle()\">");
+
+            document.write("<input type=\"hidden\" name=\"userName\" value=" + userInfo.Name + ">");
+            document.write("<input type=\"hidden\" name=\"userUnum\" value=" + userInfo.Unum + ">");
+            document.write("<input type=\"hidden\" name=\"userID\" value=" + userInfo.ID + ">");
+
+            document.write("</form> <br>");
+
+            
+        </script>
+    </head>
+
+    <body>
+    </body>
+</html>
