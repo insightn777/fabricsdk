@@ -1,0 +1,200 @@
+
+version: '3.3'
+
+networks: 
+  hlf:
+
+services:
+  base:
+    container_name: base
+    build:
+      context: .
+      dockerfile: Dockerfile.base
+
+  #org ca
+  ca:
+    container_name: ca
+    build:
+      context: .
+      dockerfile: Dockerfile.ca
+    environment:
+      - GODEBUG=netdns=go
+      # fixed value
+      - HOSTIP=${HOSTIP}
+      # enabled TLS
+#      - FABRIC_CA_SERVER_TLS_ENABLED=${TLS}
+#      - FABRIC_CA_SERVER_TLS_CERTFILE=/root/ieetu/myfabric/ca-server/tls/ca.crt
+#      - FABRIC_CA_SERVER_TLS_KEYFILE=/root/ieetu/myfabric/ca-server/tls/server.key
+    stdin_open: true
+    tty: true
+    ports:
+      - "7054:7054"
+    networks:
+      - hlf
+    depends_on:
+      - base
+
+  #org admin
+  admin:
+    container_name: admin
+    build:
+      context: .
+      dockerfile: Dockerfile.peer
+    stdin_open: true
+    tty: true
+    environment:
+      - CORE_PEER_LOCALMSPID=Org2
+      # fixed value
+      - CORE_PEER_ADDRESS=peer2:7051
+      - HOSTIP=${HOSTIP}
+      - GODEBUG=netdns=go
+      - CORE_PEER_MSPCONFIGPATH=/root/ieetu/myfabric/msp
+#      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      # enabled TLS
+      - CORE_PEER_TLS_ENABLED=${TLS}
+      - CORE_PEER_TLS_KEY_FILE=/root/ieetu/myfabric/tls/server.key
+      - CORE_PEER_TLS_CERT_FILE=/root/ieetu/myfabric/tls/server.crt
+      - CORE_PEER_TLS_ROOTCERT_FILE=/root/ieetu/myfabric/tls/tlsca.crt
+#      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_hlf
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+    ports:
+      - "8080:8080"
+    networks:
+      - hlf
+    depends_on:
+      - ca
+    volumes:
+      - /var/run/:/host/var/run/
+
+
+  #org orderer
+  orderer:
+    container_name: orderer
+    build:
+      context: .
+      dockerfile: Dockerfile.orderer
+    stdin_open: true
+    tty: true
+    environment:
+      - ORDERER_GENERAL_LOCALMSPID=Org2
+      # fixed value
+      - CONFIGTX_ORDERER_KAFKA_BROKERS=[org0:9092,org1:9092,org2:9092]
+      - HOSTIP=${HOSTIP}
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/root/ieetu/myfabric/genesis.block
+      - ORDERER_GENERAL_LOCALMSPDIR=/root/ieetu/myfabric/msp
+      # config orderer
+      - CONFIGTX_ORDERER_BATCHTIMEOUT=1s
+      - CONFIGTX_ORDERER_ORDERERTYPE=kafka
+      # enabled TLS
+      - ORDERER_GENERAL_TLS_ENABLED=${TLS}
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/root/ieetu/myfabric/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/root/ieetu/myfabric/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/root/ieetu/myfabric/tls/tlsca.crt,/root/ieetu/myfabric/tls/tlsca0.crt,/root/ieetu/myfabric/tls/tlsca1.crt]
+    ports:
+      - "7050:7050"
+    depends_on:
+      - ca
+    networks:
+      - hlf
+
+  #org anchor peer
+  peer:
+    container_name: peer
+    build:
+      context: .
+      dockerfile: Dockerfile.peer
+    stdin_open: true
+    tty: true
+    environment:
+      - CORE_PEER_ID=peer2
+      - CORE_PEER_LOCALMSPID=Org2
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=Org2
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=Org2pw
+      # fixed value
+      - GODEBUG=netdns=go
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer2:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer2:7051
+      - CORE_PEER_ADDRESS=peer2:7051
+      - HOSTIP=${HOSTIP}
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_ADDRESSAUTODETECT=true
+      - CORE_PEER_ENDORSER_ENABLED=true
+      - CORE_PEER_MSPCONFIGPATH=/root/ieetu/myfabric/msp
+      # config GOSSIP
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      # enabled TLS
+      - CORE_PEER_TLS_ENABLED=${TLS}
+      - CORE_PEER_TLS_KEY_FILE=/root/ieetu/myfabric/tls/server.key
+      - CORE_PEER_TLS_CERT_FILE=/root/ieetu/myfabric/tls/server.crt
+      - CORE_PEER_TLS_ROOTCERT_FILE=/root/ieetu/myfabric/tls/tlsca.crt
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      # couchDB
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=${HOSTIP}:5984
+      # The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+      # provide the credentials for ledger to connect to CouchDB.  The username and password must
+      # match the username and password set for the associated CouchDB.
+    ports:
+      - "7051:7051"
+      - "7052:7052"
+      - "7053:7053"
+    depends_on:
+      - orderer
+      - couchdb
+    networks:
+      - hlf
+    volumes:
+      - /var/run/:/host/var/run/
+
+  couchdb:
+    container_name: couchdb
+    image: hyperledger/fabric-couchdb
+    environment:
+      - COUCHDB_USER=Org2
+      - COUCHDB_PASSWORD=Org2pw
+    ports:
+      - "5984:5984"
+    networks:
+      - hlf    
+
+  zookeeper:
+    container_name: zookeeper
+    image: hyperledger/fabric-zookeeper
+    restart: always
+    environment:
+            - ZOO_MY_ID=3
+            - ZOO_SERVERS=server.1=${ORG0}:2888:3888 server.2=${ORG1}:2888:3888 server.3=${ORG2}:2888:3888
+    ports:
+      - "2181:2181"
+      - "2888:2888"
+      - "3888:3888"
+    networks:
+      - hlf
+    depends_on:
+      - orderer
+
+  kafka:
+    container_name: kafka
+    image: hyperledger/fabric-kafka
+    restart: always
+    environment:
+      - KAFKA_BROKER_ID=2
+      - KAFKA_ADVERTISED_HOST_NAME=${ORG2} #kafka 주소
+      - KAFKA_ZOOKEEPER_CONNECT=${ORG0}:2181,${ORG1}:2181,${ORG2}:2181
+      # fixed value
+      - KAFKA_ADVERTISED_PORT=9092
+      - KAFKA_MESSAGE_MAX_BYTES=103809024 # 99 * 1024 * 1024 B
+      - KAFKA_REPLICA_FETCH_MAX_BYTES=103809024
+      - KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE=false
+      - KAFKA_NUM_REPLICA_FETCHERS=1
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=1
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    networks:
+      - hlf
